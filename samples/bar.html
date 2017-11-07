@@ -130,6 +130,26 @@
                                 console.log('Annotation', e.type, this);
                             }
                         }, {
+                            id: 'vlineRandomRange',
+                            type: 'line',
+                            mode: 'vertical',
+                            scaleID: 'x-axis-0',
+                            rangeScaleID: 'y-axis-0',
+                            rangeStart: randomScalingFactor(),
+                            rangeEnd: randomScalingFactor(),
+                            value: 'March',
+                            borderColor: 'orange',
+                            borderWidth: 5,
+                            label: {
+                                backgroundColor: "orange",
+                                content: "Random range",
+                                enabled: true
+                            },
+                            onClick: function(e) {
+                                // The annotation is is bound to the `this` variable
+                                console.log('Annotation', e.type, this);
+                            }
+                        }, {
                             drawTime: 'beforeDatasetsDraw',
                             type: 'box',
                             xScaleID: 'x-axis-0',

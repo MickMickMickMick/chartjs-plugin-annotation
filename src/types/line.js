@@ -19,6 +19,15 @@ module.exports = function(Chart) {
 				min: minValue,
 				max: maxValue || minValue
 			};
+
+			if(options.rangeScaleID) {
+				minValue = Array.isArray(options.rangeStart) ? options.rangeStart[0] : options.rangeStart;
+				maxValue = Array.isArray(options.rangeEnd)   ? options.rangeEnd[1]   : options.rangeEnd;
+				model.ranges[options.rangeScaleID] = {
+					min: minValue,
+					max: maxValue
+				};
+			}
 		},
 		configure: function() {
 			var model = this._model;
@@ -33,11 +42,20 @@ module.exports = function(Chart) {
 				endPixel = helpers.getPixelForValue(scale, options.endValue, pixel);
 			}
 
+			var chartArea = chartInstance.chartArea;
+			var rangeStart = this.options.mode == horizontalKeyword ? chartArea.left : chartArea.top;
+			var rangeEnd = this.options.mode == horizontalKeyword ? chartArea.right : chartArea.bottom;
+			if(options.rangeScaleID && chartInstance.scales[options.rangeScaleID]) {
+				var rangeScale = chartInstance.scales[options.rangeScaleID];
+				var rMin = helpers.getPixelForValue(rangeScale, options.rangeStart, rangeStart);
+				var rMax   = helpers.getPixelForValue(rangeScale, options.rangeEnd,   rangeEnd);
+				rangeStart = Math.min(rMin, rMax);
+				rangeEnd   = Math.max(rMin, rMax);
+			}
+
 			if (isNaN(pixel)) {
 				return;
 			}
-
-			var chartArea = chartInstance.chartArea;
 
 			// clip annotations to the chart area
 			model.clip = {
@@ -48,13 +66,13 @@ module.exports = function(Chart) {
 			};
 
 			if (this.options.mode == horizontalKeyword) {
-				model.x1 = chartArea.left;
-				model.x2 = chartArea.right;
+				model.x1 = rangeStart;
+				model.x2 = rangeEnd;
 				model.y1 = pixel;
 				model.y2 = endPixel;
 			} else {
-				model.y1 = chartArea.top;
-				model.y2 = chartArea.bottom;
+				model.y1 = rangeStart;
+				model.y2 = rangeEnd;
 				model.x1 = pixel;
 				model.x2 = endPixel;
 			}
